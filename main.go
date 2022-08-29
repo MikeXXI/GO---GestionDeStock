@@ -1,17 +1,12 @@
 package main
 
 import (
+	"GestionDeStock/controllers"
 	"bufio"
 	"fmt"
 	"os"
 	"strconv"
 )
-
-type Product struct {
-	Nom      string
-	Prix     float64
-	Quantite int
-}
 
 func affichage_menu() {
 	fmt.Printf("1 - Ajouter un produit\n")
@@ -20,60 +15,6 @@ func affichage_menu() {
 	fmt.Printf("4 - Recherchez un produit\n")
 	fmt.Printf("5 - Listez les produit \n")
 	fmt.Printf("6 - Quittez \n")
-}
-func add_product() {
-	fmt.Println("Indiquer le nom du produit")
-	scanner := bufio.NewScanner(os.Stdin)
-	scanner.Scan()
-	name := scanner.Text()
-
-	fmt.Println("Indiquer le prix du produit")
-	scanner.Scan()
-	price, _ := strconv.ParseFloat(scanner.Text(), 64)
-	price = verif_price(price)
-
-	fmt.Println("Indiquer la quantité du produit")
-	scanner.Scan()
-	quantity, _ := strconv.Atoi(scanner.Text())
-	quantity = verif_quantity(quantity)
-
-	product := Product{name, price, quantity}
-	fmt.Println(product)
-	fmt.Println("Produit ajouté")
-
-}
-
-func del_product() {
-	fmt.Println("Menu Supprimer")
-}
-func update_product() {
-	fmt.Println("Menu Modifié")
-}
-
-func list_product(create_list bool) {
-	if create_list {
-		fmt.Println("Menu List")
-	} else {
-		fmt.Println("Menu recherchez")
-	}
-}
-func verif_price(price float64) float64 {
-	scanner := bufio.NewScanner(os.Stdin)
-	for price == 0 {
-		fmt.Println("Le prix ne peut pas être 0, pour les prix à virgule utiliser le point")
-		scanner.Scan()
-		price, _ = strconv.ParseFloat(scanner.Text(), 64)
-	}
-	return price
-}
-func verif_quantity(quantity int) int {
-	scanner := bufio.NewScanner(os.Stdin)
-	for quantity == 0 {
-		fmt.Println("La quantité ne peut pas être 0, ne peut pas être du texte")
-		scanner.Scan()
-		quantity, _ = strconv.Atoi(scanner.Text())
-	}
-	return quantity
 }
 
 func main() {
@@ -91,19 +32,42 @@ func main() {
 		choix = text
 		switch choix {
 		case 1:
-			add_product()
+			fmt.Print("\033[H\033[2J")
+			controllers.AddProduct()
 			choix = 0
 		case 2:
-			del_product()
+			fmt.Print("\033[H\033[2J")
+			fmt.Printf("Quelle est le nom du produit à supprimer? \n")
+			scanner.Scan()
+			rep := scanner.Text()
+			controllers.DelProduct(rep)
 			choix = 0
 		case 3:
-			update_product()
+			fmt.Print("\033[H\033[2J")
+			fmt.Printf("Quelle est le nom du produit à modifier? \n")
+			scanner.Scan()
+			rep := scanner.Text()
+			fmt.Printf("Que souhaitez vous modifier? \n")
+			fmt.Printf("1 - Nom\n")
+			fmt.Printf("2 - Prix\n")
+			fmt.Printf("3 - Quantité\n")
+			change := 0
+			for change > 3 || change < 1 {
+				scanner.Scan()
+				change, _ = strconv.Atoi(scanner.Text())
+			}
+			controllers.UpdateProduct(rep, change)
 			choix = 0
 		case 4:
-			list_product(false)
+			fmt.Print("\033[H\033[2J")
+			fmt.Printf("Quelle est le nom du produit recherchez? \n")
+			scanner.Scan()
+			rep := scanner.Text()
+			controllers.FindProduct(rep)
 			choix = 0
 		case 5:
-			list_product(true)
+			fmt.Print("\033[H\033[2J")
+			controllers.ListProduct()
 			choix = 0
 		case 6:
 			break
